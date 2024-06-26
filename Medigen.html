@@ -1,0 +1,603 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Medicine Generation</title>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+        /* Global styles */
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        /* Navigation Bar styles */
+        nav {
+    background-color: #87CEEB;
+    color: black;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    margin-right: 15px;
+    transition: color 0.3s; /* Add a smooth color transition */
+    background-color: #333;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+nav a:hover {
+    color: #007bff; /* Change the color to blue on hover */
+}
+
+        /* Search Bar styles */
+        .search-bar {
+            text-align: center;
+            margin: 20px 0;
+           float: center;
+        }
+
+        .search-bar input[type="text"] {
+            padding: 10px 50px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .search-button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+       /* Medicine Details Modal styles */
+.modal {
+    display: none;
+    position: fixed; /* Keep it as 'fixed' for a pop-up */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Center the modal */
+    width: 40%; /* Adjust the width as needed */
+    max-width: 400px; /* Limit the maximum width */
+    background-color: #fff;
+    border-radius: 5px;
+    z-index: 1000; /* Ensure the modal appears above other elements */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content {
+    padding: 20px;
+}
+
+/* Add a close button inside the modal */
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+
+        .modal h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .modal input[type="text"], .modal input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .modal .add-button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        .prescription {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.prescription h2 {
+    background-color: #AEDFF7;
+    color: black;
+    padding: 20px;
+    border-radius: 5px 5px 0 0;
+    margin: -10px -10px 10px -10px;
+  
+}
+
+.prescription ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.prescription li {
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.prescription li:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: #ccc;
+}
+
+        /* Medicine list styles */
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            margin-bottom: 10px;
+        }
+ .patient-details {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f0f0f0;
+        }
+ .edit-button, .delete-button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .edit-button:hover, .delete-button:hover {
+            background-color: #555;
+        }
+ #print-button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+           float: right;
+        }
+#print_ele{
+    background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+           float: right;
+}
+
+        #print-button:hover {
+            background-color: #0056b3;
+        }
+        #print_ele{
+            background-color: #0056b3;
+        }
+
+    aside {
+            float: right;
+            width: 30%;
+            padding: 20px;
+            background-color: #f0f0f0; /* Background color for the right column */
+            border: 1px solid #ccc; /* Add a border for separation */
+           height: 100%;
+        }
+
+/* Footer styles */
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+@media print {
+    .edit-delete-buttons {
+        display: none;
+    }
+}
+
+    </style>
+</head>
+<body>
+<h2 style="background-color: #333; color: #fff; padding: 10px; border-radius: 2px 25px; text-align: center;"> MediGen </h2>
+    <nav>
+        <div>
+            <a href="#">Home</a>
+            <a href="#">Patient's History</a>
+            <a href="#">Doctor's Profile</a>
+        </div>
+        
+    </nav>
+<div class="search-bar">
+        <input type="text" id="medicine-input" placeholder="Search for Medicine...">
+         <a href="#" class="search-button" onclick="searchMedicine()">Search</a>
+    </div>
+<aside style="margin-left: 20px;">
+<div>
+            <input type="text" id="patient-id" placeholder="Enter Patient's ID">
+            <button class="search-button" onclick="displayPatientDetails()">Submit</button>
+        </div>
+<div class="patient-details" id="patient-details">
+        <h2>Patient Details</h2>
+        <p><strong>Name:</strong> <span id="patient-name"></span></p>
+        <p><strong>Gender:</strong> <span id="patient-gender"></span></p>
+        <p><strong>Address:</strong> <span id="patient-address"></span></p>
+        <p><strong>Blood Type:</strong> <span id="patient-blood-type"></span></p>
+        <p><strong>Allergies:</strong> <span id="patient-allergies"></span></p>
+        <p><strong>Last Visited:</strong> <span id="patient-last-visited"></span></p>
+    </div>
+</aside>
+   
+
+    <!-- Medicine Details Modal -->
+    <div id="medicineDetailsModal" class="modal">
+        <div class="modal-content">
+            <h2>Medicine Details</h2>
+            <p id="medicine-name"></p>
+            <input type="number" id="dosage" placeholder="Dosage (mg)">
+            <input type="number" id="duration" placeholder="Duration (days)">
+            <button class="add-button" onclick="addMedicineToPrescription()">Add to Prescription</button>
+           <button class="cancel-button" onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+
+
+    <!-- Prescription -->
+    <div class="prescription">
+        <h2>Prescription</h2>
+        <ul id="prescription-list">
+            <!-- Prescription items will be added here -->
+        </ul>
+    </div>
+    <div id="qrcode"></div>
+  <button id="print-button" onclick="downloadPrescription()">Print Prescription</button>
+<button id="print_ele">Generate Qr code</button>
+    <script>
+        let prescriptionString="";
+        const medicineNames = [
+            "Dolo",
+            "Crocin",
+            "Medicine 3",
+            "Medicine 4",
+            "Medicine 5",
+        ];
+
+const patients = [
+            {
+                id: "1",
+                name: "John Doe",
+                gender: "Male",
+                address: "123 Main St, City",
+                bloodType: "A+",
+                allergies: "None",
+                lastVisited: "2023-09-01",
+            },
+            {
+                id: "2",
+                name: "Jane Smith",
+                gender: "Female",
+                address: "456 Elm St, Town",
+                bloodType: "B-",
+                allergies: "Pollen",
+                lastVisited: "2023-08-15",
+            },
+            {
+                id: "3",
+                name: "Bob Johnson",
+                gender: "Male",
+                address: "789 Oak St, Village",
+                bloodType: "O+",
+                allergies: "Peanuts",
+                lastVisited: "2023-09-03",
+            },
+            {
+                id: "4",
+                name: "Alice Brown",
+                gender: "Female",
+                address: "101 Pine St, Village",
+                bloodType: "AB+",
+                allergies: "None",
+                lastVisited: "2023-08-25",
+            },
+            {
+                id: "5",
+                name: "Chris Davis",
+                gender: "Male",
+                address: "202 Cedar St, Town",
+                bloodType: "A-",
+                allergies: "Cat Hair",
+                lastVisited: "2023-09-02",
+            },
+        ];
+
+let currentEditingMedicine = null;
+
+        function searchMedicine() {
+            const searchInput = document.getElementById('medicine-input').value.trim().toLowerCase();
+            const matchingMedicines = medicineNames.filter(name => name.toLowerCase().includes(searchInput));
+            
+            if (matchingMedicines.length > 0) {
+                const medicineName = matchingMedicines[0]; // Display the first matching medicine
+                displayMedicineModal(medicineName);
+            } else {
+                alert('Medicine not found.');
+            }
+        }
+
+        function displayMedicineModal(medicineName) {
+            const modal = document.getElementById('medicineDetailsModal');
+            const modalContent = document.querySelector('.modal-content');
+            const medicineNameElement = document.getElementById('medicine-name');
+            
+            medicineNameElement.textContent = medicineName;
+            modal.style.display = 'block';
+
+            // Close the modal when clicking outside of it
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    closeModal();
+                }
+            };
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('medicineDetailsModal');
+            modal.style.display = 'none';
+            document.getElementById('dosage').value = '';
+            document.getElementById('duration').value = '';
+            currentEditingMedicine = null;
+        }
+
+        
+            function addMedicineToPrescription() {
+    const medicineName = document.getElementById('medicine-name').textContent;
+    const dosageInput = document.getElementById('dosage');
+    const durationInput = document.getElementById('duration');
+
+    const dosage = dosageInput.value;
+    const duration = durationInput.value;
+
+    if (!dosage || !duration) {
+        alert('Please enter both dosage and duration.');
+        return;
+    }
+
+    // Concatenate the medicine details to the prescription string
+    prescriptionString += `${medicineName} - Dosage: ${dosage} mg\n`;
+console.log(prescriptionString);
+    // Update the prescription list with the concatenated prescription string
+    const prescriptionList = document.getElementById('prescription-list');
+    const prescriptionItem = document.createElement('li');
+    prescriptionItem.innerHTML = `
+        ${medicineName} - Dosage: ${dosage} mg, Duration: ${duration} days
+        <button class="edit-button" onclick="editMedicine(this)">Edit</button>
+        <button class="delete-button" onclick="deleteMedicine(this)">Delete</button>
+    `;
+    prescriptionList.appendChild(prescriptionItem);
+
+    // Clear input fields and reset currentEditingMedicine
+    dosageInput.value = '';
+    durationInput.value = '';
+    currentEditingMedicine = null;
+
+    closeModal();
+}
+
+  function editMedicine(button) {
+            const prescriptionItem = button.parentElement;
+            const medicineDetails = prescriptionItem.textContent.split(' - ');
+
+            if (medicineDetails.length === 2) {
+                const [medicineName, dosageAndDuration] = medicineDetails;
+                const [dosage, duration] = dosageAndDuration
+                    .replace('Dosage: ', '')
+                    .replace(' mg, Duration: ', '')
+                    .split(', ');
+
+                // Populate modal with existing medicine details for editing
+                document.getElementById('medicine-name').textContent = medicineName;
+                document.getElementById('dosage').value = parseFloat(dosage);
+                document.getElementById('duration').value = parseFloat(duration);
+
+                // Remove the medicine from the prescription
+                prescriptionItem.remove();
+
+                // Set the current editing medicine
+                currentEditingMedicine = prescriptionItem;
+
+                // Display the medicine modal for editing
+                displayMedicineModal(medicineName);
+            }
+        }
+
+        function deleteMedicine(button) {
+            const prescriptionItem = button.parentElement;
+            prescriptionItem.remove();
+        }
+
+  function displayPatientDetails() {
+            const patientId = document.getElementById('patient-id').value;
+            const patientDetails = patients.find(patient => patient.id === patientId);
+
+            if (patientDetails) {
+                const patientDetailsContainer = document.getElementById('patient-details');
+                patientDetailsContainer.innerHTML = `
+                    <h2>Patient Details</h2>
+                    <p>Name: ${patientDetails.name}</p>
+                    <p>Gender: ${patientDetails.gender}</p>
+                    <p>Address: ${patientDetails.address}</p>
+                    <p>Blood Type: ${patientDetails.bloodType}</p>
+                    <p>Allergies: ${patientDetails.allergies}</p>
+                    <p>Last Visited: ${patientDetails.lastVisited}</p>
+                `;
+            } else {
+                alert('Patient not found.');
+            }
+        }
+
+        function printPrescription() {
+    const patientDetails = document.getElementById('patient-details').innerHTML;
+    const prescription = document.querySelector('.prescription').innerHTML;
+    const qrcodeCanvas = document.getElementById('qrcode');
+
+    // Create a new window for printing
+    const printWindow = window.open('', '', 'width=600,height=600');
+    printWindow.document.open();
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>Prescription</title>
+        </head>
+        <body>
+            <h1>Prescription</h1>
+            ${patientDetails}
+            ${prescription}
+            <h2>Doctor's Acknowledgment:</h2>
+            <p>This is to certify that the above prescription is valid and has been issued by a licensed medical practitioner.</p>
+            <h2>QR Code:</h2>
+            <img src="${qrcodeCanvas.toDataURL('image/png')}">
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+
+    // Print the content
+    printWindow.print();
+
+    // Close the new window after printing
+    printWindow.close();
+}
+       /* function downloadPrescription() {
+  const patientDetails = document.getElementById('patient-details').innerText;
+  const prescription = document.querySelector('.prescription').innerText;
+
+  // Combine patient details and prescription content into a single string
+  const prescriptionText = `Prescription\n\n${patientDetails}\n\n${prescription}\n\nDoctor's Acknowledgment:\nThis is to certify that the above prescription is valid and has been issued by a licensed medical practitioner.`;
+
+  // Create a Blob (Binary Large Object) containing the text data
+  const blob = new Blob([prescriptionText], { type: 'text/plain' });
+
+  // Create a temporary URL for the Blob
+  const url = URL.createObjectURL(blob);
+
+  // Create a download link
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'prescription.txt';
+  a.style.display = 'none';
+
+  // Add the link to the document and trigger a click event to start the download
+  document.body.appendChild(a);
+  a.click();
+
+  // Remove the link and revoke the Blob URL to free up resources
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+*/
+
+
+
+
+function downloadPrescription() {
+  const patientDetails = document.getElementById('patient-details').innerText;
+  const prescription = document.querySelector('.prescription').innerText;
+
+  // Create a new QR code with the prescription text
+  const qrcode = new QRCode({
+    content: prescriptionString,
+    width: 128,
+    height: 128,
+  });
+
+  // Get the QR code image as a data URL
+  const qrcodeDataURL = qrcode.toDataURL("image/png");
+
+  // Combine patient details, prescription content, and QR code image into a single string
+  const prescriptionText = `Prescription\n\n${patientDetails}\n\n${prescription}\n\nDoctor's Acknowledgment:\nThis is to certify that the above prescription is valid and has been issued by a licensed medical practitioner.\n\nQR Code:\n${qrcodeDataURL}`;
+
+  // Create a Blob (Binary Large Object) containing the text data
+  const blob = new Blob([prescriptionText], { type: 'text/plain' });
+
+  // Create a temporary URL for the Blob
+  const url = URL.createObjectURL(blob);
+
+  // Create a download link
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'prescription_with_qrcode.txt';
+  a.style.display = 'none';
+
+  // Add the link to the document and trigger a click event to start the download
+  document.body.appendChild(a);
+  a.click();
+
+  // Remove the link and revoke the Blob URL to free up resources
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+    
+        document.getElementById("print_ele").addEventListener("click", generateQRCode);
+
+        function generateQRCode() {
+            const canvas = document.getElementById("qrcode");
+            const qrcode = new QRCode(canvas, {
+                text: prescriptionString,
+                width: 128,
+                height: 128,
+            });
+
+            const dataUrl = canvas.toDataURL("image.png");
+            // Open a new tab with the data URL
+            const newTab = window.open();
+            newTab.document.open();
+            newTab.document.write('<img src="' + dataUrl + '">');
+            newTab.document.close();
+            downloadURI(dataUrl, 'qrcode.png');
+        }
+ </script>
+
+
+</body>
+<footer>
+    <p>&copy; 2023 Medigen</p>
+</footer>
+</html>
